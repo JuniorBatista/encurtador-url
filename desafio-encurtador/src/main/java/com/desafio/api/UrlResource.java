@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.desafio.api.responses.Response;
+import com.desafio.api.utils.ApplicationProperties;
 import com.desafio.api.utils.Constants;
 import com.desafio.api.utils.DesafioUtils;
 import com.desafio.api.utils.UrlTransform;
@@ -31,6 +32,9 @@ public class UrlResource {
 
 	@Autowired
 	private UrlService service;
+	
+	@Autowired
+	ApplicationProperties applicationProperties;
 
 	@PostMapping
 	public ResponseEntity<Response<Url>> createShortenerUrl(@Valid @RequestBody Url urlGet, BindingResult result) {
@@ -51,10 +55,11 @@ public class UrlResource {
 	}
 	
 	@GetMapping(value="/{hashCodeUrl}")
-	public ResponseEntity<Url> openShortenerUrl(@PathVariable String hashCodeUrl) throws URISyntaxException {
-
+	public ResponseEntity<Object> openShortenerUrl(@PathVariable String hashCodeUrl) throws URISyntaxException {
+		
 		UrlTransform urlTransform = UrlTransform.getInstance();
-		final String shortUrl = urlTransform.getBaseUrl() + hashCodeUrl;
+		final String shortUrl = urlTransform.getBaseUrlHost(applicationProperties.getUrlHostShortener()) + hashCodeUrl;
+		System.out.println("shortUrl open: "+shortUrl);
 		
 		final Url urlOpen = service.findByUrlShort(shortUrl);
 		if (urlOpen == null) {
@@ -67,16 +72,21 @@ public class UrlResource {
 		if (dataHoje.after(dataExpiracao)) {
 			return ResponseEntity.status(HttpStatus.GONE).body(null);
 		}
+		
+		System.out.println("URL long open: "+urlOpen.getUrlLong());
 
 		String redirectTo = urlOpen.getUrlLong();
-		URI uri = new URI(redirectTo);
-		HttpHeaders httpHeaders = new HttpHeaders();
-	    httpHeaders.setLocation(uri);
-
-	    return new ResponseEntity<Url>(httpHeaders, HttpStatus.OK);
-
+		
+	    URI yahoo = new URI(redirectTo);
+	    HttpHeaders httpHeaders = new HttpHeaders();
+	    httpHeaders.setLocation(yahoo);
+	    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
 	}
-
+	
+	@GetMapping(value="/teste")
+	public ResponseEntity<String> testeRedirect() throws URISyntaxException {
+		return ResponseEntity.ok("Redirecionamento feito para endpoint teste!");
+	}
 
 	private void validate(Url urlGet, BindingResult result, Response<Url> response) {
 		List<String> listErrors = new ArrayList<String>();

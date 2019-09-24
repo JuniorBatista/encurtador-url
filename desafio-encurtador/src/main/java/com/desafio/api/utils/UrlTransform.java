@@ -5,12 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public class UrlTransform {
-
-	// @Value("${url.host.shortener}")
-	private String baseUrlHost = "http://localhost:8080/";
+	
+	private String baseUrlHost = "https://encurtador-url.herokuapp.com/";
 
 	private static UrlTransform instance;
 
@@ -24,13 +21,16 @@ public class UrlTransform {
 		return instance;
 	}
 	
-	public String getBaseUrl() {
-		return this.baseUrlHost + Constants.CONTROLLER_NAME + "/" ;
-	}
-
-	public String transform(String url) {
+	public String transform(String baseUrlHostConfig) {
 		int sizeHash = 23;
-		return getBaseUrl() + generateHashDatetime(sizeHash);
+		return getBaseUrlHost(baseUrlHostConfig) + generateHashDatetime(sizeHash);
+	}
+	
+	public String getBaseUrlHost(String baseUrlHostConfig) {
+		if (baseUrlHostConfig == null) {
+			baseUrlHostConfig = baseUrlHost;
+		}
+		return baseUrlHostConfig + Constants.CONTROLLER_NAME + "/";
 	}
 
 	public static String generateRandomChars(int length) {
@@ -50,9 +50,7 @@ public class UrlTransform {
 
 	private String generateHashDatetime(int sizeHash) {
 		Calendar calAgora = Calendar.getInstance();
-		System.out.println("calAgora.toString(): "+calAgora.toString());
 		String hashDateTime = stringHexa(gerarHash(calAgora.toString(), "MD5"), sizeHash);
-		System.out.println("hashDateTime: "+hashDateTime);
 		return hashDateTime;
 	}
 

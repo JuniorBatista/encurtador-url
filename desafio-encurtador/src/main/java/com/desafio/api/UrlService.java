@@ -3,6 +3,7 @@ package com.desafio.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.desafio.api.utils.ApplicationProperties;
 import com.desafio.api.utils.UrlTransform;
 
 @Service
@@ -10,6 +11,9 @@ public class UrlService {
 	
 	@Autowired
 	private UrlRepository repository;
+	
+	@Autowired
+	ApplicationProperties applicationProperties;
 	
 	public Url findByUrlLong(String shortURL) {
 		return repository.findByUrlLong(shortURL).orElse(null);
@@ -23,7 +27,8 @@ public class UrlService {
 
 		UrlTransform urlTransform = UrlTransform.getInstance();
 
-		String shortUrl = urlTransform.transform(urlGet.getUrlLong());
+		String shortUrl = urlTransform.transform(applicationProperties.getUrlHostShortener());
+		System.out.println("shortUrl: "+shortUrl);
 
 		Url url = new Url();
 		url.setUrlLong(urlGet.getUrlLong());
