@@ -68,7 +68,7 @@ public class UrlResourceTest extends DesafioEncurtadorApplicationTests {
 	public void testOpenShortenerUrl(String urlShort) throws Exception {
 		this.mockMvc.perform(
 				MockMvcRequestBuilders.get(urlShort))
-					.andExpect(MockMvcResultMatchers.status().isOk());
+					.andExpect(MockMvcResultMatchers.status().isSeeOther());
 	}
 	
     public Url build() {

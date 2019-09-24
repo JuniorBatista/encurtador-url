@@ -39,7 +39,7 @@ public class DesafioUtils {
 			result.getAllErrors().forEach(error -> listErrors.add(error.getDefaultMessage()));
 		}
 
-        if (!DesafioUtils.isValid(urlGet.getUrlLong())) {
+        if (!isValid(urlGet.getUrlLong())) {
         	listErrors.add("URL inválida!");
 		}
 

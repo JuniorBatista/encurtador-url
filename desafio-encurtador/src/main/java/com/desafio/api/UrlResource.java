@@ -89,14 +89,17 @@ public class UrlResource {
 	}
 
 	private void validate(Url urlGet, BindingResult result, Response<Url> response) {
+
 		List<String> listErrors = new ArrayList<String>();
+
 		DesafioUtils.validateUrl(listErrors, urlGet, result, response);
-		
+
 		if (service.findByUrlLong(urlGet.getUrlLong()) != null) {
 			listErrors.add("URL já cadastrada!");
 		}
 
 		listErrors.forEach(error -> response.getErros().add(error));
+
 	}
 	
 }
