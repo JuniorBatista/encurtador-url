@@ -53,7 +53,8 @@ public class UrlResource {
 	@GetMapping(value="/{hashCodeUrl}")
 	public ResponseEntity<Url> openShortenerUrl(@PathVariable String hashCodeUrl) throws URISyntaxException {
 
-		final String shortUrl = UrlTransform.baseUrlShortener+hashCodeUrl;
+		UrlTransform urlTransform = UrlTransform.getInstance();
+		final String shortUrl = urlTransform.getBaseUrl() + hashCodeUrl;
 		
 		final Url urlOpen = service.findByUrlShort(shortUrl);
 		if (urlOpen == null) {

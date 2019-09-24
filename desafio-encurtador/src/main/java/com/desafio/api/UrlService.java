@@ -24,9 +24,6 @@ public class UrlService {
 		UrlTransform urlTransform = UrlTransform.getInstance();
 
 		String shortUrl = urlTransform.transform(urlGet.getUrlLong());
-		while (!repository.findByUrlShort(shortUrl).isEmpty()) {
-			shortUrl = urlTransform.transform(urlGet.getUrlLong());
-		}
 
 		Url url = new Url();
 		url.setUrlLong(urlGet.getUrlLong());
