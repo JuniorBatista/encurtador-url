@@ -1,5 +1,7 @@
 package com.desafio.api;
 
+import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,17 @@ public class UrlResourceTest extends DesafioEncurtadorApplicationTests {
 	}
 	
 	@Test
+	public void testCreateShortenerUrlInvalid() throws Exception {
+		Url novaUrl = build();
+		novaUrl.setUrlLong("google-.com..br");
+		this.mockMvc.perform(MockMvcRequestBuilders
+			.post("/"+Constants.CONTROLLER_NAME)
+			.contentType(Constants.APPLICATION_JSON)
+			.content(DesafioUtils.convertObjectToJson(novaUrl)))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+	
+	@Test
 	public void testCreateAndOpenShortenerUrl() throws Exception {
 		Url novaUrl = build();
 		ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders
@@ -54,7 +67,10 @@ public class UrlResourceTest extends DesafioEncurtadorApplicationTests {
 		
 		String jsonString = mvcReturn.getResponse().getContentAsString();
 		Url urlCreated = DesafioUtils.convertJsonStringToObject(jsonString);
-		testOpenShortenerUrl(urlCreated.getUrlShort());
+		
+		this.mockMvc.perform(
+				MockMvcRequestBuilders.get(urlCreated.getUrlShort()))
+					.andExpect(MockMvcResultMatchers.status().isSeeOther());
 		
 	}
 	
@@ -64,15 +80,9 @@ public class UrlResourceTest extends DesafioEncurtadorApplicationTests {
 				MockMvcRequestBuilders.get("/"+Constants.CONTROLLER_NAME+"/6IoM1"))
 					.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
-
-	public void testOpenShortenerUrl(String urlShort) throws Exception {
-		this.mockMvc.perform(
-				MockMvcRequestBuilders.get(urlShort))
-					.andExpect(MockMvcResultMatchers.status().isSeeOther());
-	}
 	
     public Url build() {
         return helper.buildUrl();
     }
-	
+    
 }

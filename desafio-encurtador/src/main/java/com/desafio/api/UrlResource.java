@@ -2,9 +2,7 @@ package com.desafio.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -22,12 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.desafio.api.responses.Response;
 import com.desafio.api.utils.ApplicationProperties;
-import com.desafio.api.utils.Constants;
-import com.desafio.api.utils.DesafioUtils;
 import com.desafio.api.utils.UrlTransform;
 
 @RestController
-@RequestMapping("/"+Constants.CONTROLLER_NAME)
+@RequestMapping("/urlshortener")
 public class UrlResource {
 
 	@Autowired
@@ -40,66 +36,62 @@ public class UrlResource {
 	public ResponseEntity<Response<Url>> createShortenerUrl(@Valid @RequestBody Url urlGet, BindingResult result) {
 
 		Response<Url> response = new Response<Url>();
-		
-		validate(urlGet, result, response);
+
+		service.validate(urlGet, result, response);
 
 		if (!response.getErros().isEmpty()) {
 			return ResponseEntity.badRequest().body(response);
 		}
-		 
-		Url url = service.insert(urlGet);
 
+		Url url = service.insert(urlGet);
 		response.setData(url);
+
 		return ResponseEntity.ok(response);
 
 	}
 	
 	@GetMapping(value="/{hashCodeUrl}")
 	public ResponseEntity<Object> openShortenerUrl(@PathVariable String hashCodeUrl) throws URISyntaxException {
-		
+
 		UrlTransform urlTransform = UrlTransform.getInstance();
-		final String shortUrl = urlTransform.getBaseUrlHost(applicationProperties.getUrlHostShortener()) + hashCodeUrl;
-		System.out.println("shortUrl open: "+shortUrl);
-		
-		final Url urlOpen = service.findByUrlShort(shortUrl);
-		if (urlOpen == null) {
+		final String shortUrl = urlTransform.getBaseUrlHost(
+				applicationProperties.getUrlHostShortener()) + "/" + hashCodeUrl;
+
+		final Url urlShortenerOpen = service.findByUrlShort(shortUrl);
+		if (urlShortenerOpen == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("<h2>URL não encontrada!</h2>");
+		}
+
+		if (new Date().after(urlShortenerOpen.getExpirationDate())) {
+			return ResponseEntity.status(HttpStatus.GONE).body("<h2>URL expirada!</h2>");
+		}
+
+	    URI urlRedirect = new URI(urlShortenerOpen.getUrlLong());
+	    HttpHeaders httpHeaders = new HttpHeaders();
+	    httpHeaders.setLocation(urlRedirect);
+
+	    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+
+	}
+
+	@GetMapping(value="/id/{id}")
+	public ResponseEntity<Response<Url>> openShortenerUrlById(@PathVariable Long id) throws URISyntaxException {
+
+		final Url url = service.findById(id);
+		if (url == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
-		Date dataExpiracao = DesafioUtils.getDataExpiracao(urlOpen);
-		Date dataHoje = new Date();
-		
-		if (dataHoje.after(dataExpiracao)) {
-			return ResponseEntity.status(HttpStatus.GONE).body(null);
-		}
-		
-		System.out.println("URL long open: "+urlOpen.getUrlLong());
+		Response<Url> response = new Response<Url>();
+		response.setData(url);
 
-		String redirectTo = urlOpen.getUrlLong();
-		
-	    URI yahoo = new URI(redirectTo);
-	    HttpHeaders httpHeaders = new HttpHeaders();
-	    httpHeaders.setLocation(yahoo);
-	    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+		return ResponseEntity.ok(response);
+
 	}
-	
+
 	@GetMapping(value="/teste")
 	public ResponseEntity<String> testeRedirect() throws URISyntaxException {
 		return ResponseEntity.ok("Redirecionamento feito para endpoint teste!");
 	}
 
-	private void validate(Url urlGet, BindingResult result, Response<Url> response) {
-
-		List<String> listErrors = new ArrayList<String>();
-
-		DesafioUtils.validateUrl(listErrors, urlGet, result, response);
-
-		if (service.findByUrlLong(urlGet.getUrlLong()) != null) {
-			listErrors.add("URL já cadastrada!");
-		}
-
-		listErrors.forEach(error -> response.getErros().add(error));
-
-	}
-	
 }
