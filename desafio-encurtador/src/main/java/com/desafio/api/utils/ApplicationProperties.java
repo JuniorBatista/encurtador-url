@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationProperties {
 
 	private String urlHostShortener;
+	private Integer expiresDays;
 
 	public String getUrlHostShortener() {
 		return urlHostShortener;
@@ -15,6 +16,14 @@ public class ApplicationProperties {
 
 	public void setUrlHostShortener(String urlHostShortener) {
 		this.urlHostShortener = urlHostShortener;
+	}
+
+	public Integer getExpiresDays() {
+		return expiresDays;
+	}
+
+	public void setExpiresDays(Integer expiresDays) {
+		this.expiresDays = expiresDays;
 	}
 	
 }

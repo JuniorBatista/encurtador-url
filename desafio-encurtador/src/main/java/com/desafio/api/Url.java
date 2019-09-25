@@ -18,9 +18,8 @@ public class Url {
 	private Long id;
 	private String urlLong;
 	private String urlShort;
-	private Integer expiresDays;
-	private Date dataCriacao;
-	private Date dataAtualizacao;
+	private Date creationDate;
+	private Date expirationDate;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,49 +49,38 @@ public class Url {
 		this.urlShort = urlShort;
 	}
 
-	@Column(name = "expires_days", nullable = false)
-	public Integer getExpiresDays() {
-		return expiresDays;
+	@Column(name = "creation_date", nullable = false)
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
-	public void setExpiresDays(Integer expiresDays) {
-		this.expiresDays = expiresDays;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
-	@Column(name = "data_criacao", nullable = false)
-	public Date getDataCriacao() {
-		return dataCriacao;
+	@Column(name = "expiration_date", nullable = false)
+	public Date getExpirationDate() {
+		return expirationDate;
 	}
 
-	public void setDataCriacao(Date dataCriacao) {
-		this.dataCriacao = dataCriacao;
-	}
-
-	@Column(name = "data_atualizacao", nullable = false)
-	public Date getDataAtualizacao() {
-		return dataAtualizacao;
-	}
-
-	public void setDataAtualizacao(Date dataAtualizacao) {
-		this.dataAtualizacao = dataAtualizacao;
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
 	@PreUpdate
 	public void preUpdate() {
-		dataAtualizacao = new Date();
 	}
 	
 	@PrePersist
 	public void prePersist() {
 		final Date atual = new Date();
-		dataCriacao = atual;
-		dataAtualizacao = atual;
+		creationDate = atual;
 	}
 
 	@Override
 	public String toString() {
-		return "Url [id=" + id + ", urlLong=" + urlLong + ", urlShort=" + urlShort + ", expiresDays=" + expiresDays
-				+ ", dataCriacao=" + dataCriacao + ", dataAtualizacao=" + dataAtualizacao + "]";
+		return "Url [id=" + id + ", urlLong=" + urlLong + ", urlShort=" + urlShort + ", creationDate=" + creationDate
+				+ ", expirationDate=" + expirationDate + "]";
 	}
 
 }

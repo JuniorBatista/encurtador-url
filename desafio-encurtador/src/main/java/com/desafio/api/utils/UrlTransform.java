@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class UrlTransform {
 	
-	private String baseUrlHost = "https://encurtador-url.herokuapp.com/";
+	private String baseUrlHost = "http://localhost:8080";
 
 	private static UrlTransform instance;
 
@@ -21,16 +21,16 @@ public class UrlTransform {
 		return instance;
 	}
 	
-	public String transform(String baseUrlHostConfig) {
+	public String build(String baseUrlHostConfig) {
 		int sizeHash = 23;
-		return getBaseUrlHost(baseUrlHostConfig) + generateHashDatetime(sizeHash);
+		return getBaseUrlHost(baseUrlHostConfig) + "/" + generateHashDatetime(sizeHash);
 	}
 	
 	public String getBaseUrlHost(String baseUrlHostConfig) {
 		if (baseUrlHostConfig == null) {
 			baseUrlHostConfig = baseUrlHost;
 		}
-		return baseUrlHostConfig + Constants.CONTROLLER_NAME + "/";
+		return baseUrlHostConfig + "/" + Constants.CONTROLLER_NAME;
 	}
 
 	public static String generateRandomChars(int length) {

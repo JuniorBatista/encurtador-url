@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long>{
 
-	Optional<Url> findByUrlLong(String url);
+	Optional<Url> findByUrlLong(String urlLong);
 
-	Optional<Url> findByUrlShort(String urldecode);
+	Optional<Url> findByUrlShort(String urlShort);
 
 }

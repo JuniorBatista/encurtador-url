@@ -1,31 +1,33 @@
 package com.desafio.api;
 
-import java.util.Random;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.desafio.api.utils.ApplicationProperties;
+import com.desafio.api.utils.DesafioUtils;
 
 @Component
 public class UrlTestHelper {
 	
 	@Autowired
-	private final UrlRepository repository;
+	ApplicationProperties applicationProperties;
 
     private final String urlLong = "http://www.github.com";
-    private final Integer expiresDays = 2;
 
-    public UrlTestHelper(UrlRepository repository) {
-        this.repository = repository;
+    public UrlTestHelper() {
     }
 
     public Url buildUrl() {
     	
-    	Random random = new Random();
+    	Date expirationDate = DesafioUtils.getDataExpiracao(
+				new Date(), applicationProperties.getExpiresDays());
     	
     	Url novaUrl = new Url();
-    	novaUrl.setUrlLong(urlLong+"/"+random.nextInt());
-    	novaUrl.setExpiresDays(expiresDays);
+    	novaUrl.setUrlLong(urlLong);
+    	novaUrl.setExpirationDate(expirationDate);
         return novaUrl;
     }
-   
+    
 }
