@@ -29,3 +29,8 @@ build/
 
 ### VS Code ###
 .vscode/
+.metadata/
+Servers/
+.mvn/
+mvnw.cmd
+mvnw
