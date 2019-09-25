@@ -9,6 +9,7 @@ Projeto de encurtador de URL construído com Spring Tool Suite + Java 8 + Swagge
 ## Instruções
 - Dias de expiração da URL: configurado no arquivo application.properties.
 - Utilizar o Postman para realização dos testes.
+- Swagger: http://localhost:8080/swagger-ui.html
 
 ## Endpoints
 
